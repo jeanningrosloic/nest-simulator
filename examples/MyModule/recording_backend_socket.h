@@ -24,10 +24,10 @@
 #define RECORDING_BACKEND_SOCKET_H
 
 // Includes for network access:
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 #include "recording_backend.h"
 

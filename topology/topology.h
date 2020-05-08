@@ -27,8 +27,8 @@
 #include <vector>
 
 // Includes from nestkernel:
-#include "node_collection.h"
 #include "nest_types.h"
+#include "node_collection.h"
 
 // Includes from sli:
 #include "arraydatum.h"
@@ -56,7 +56,7 @@ public:
   {
   }
 
-  void set_status( const DictionaryDatum&, bool ){};
+  void set_status( const DictionaryDatum&, bool ) {};
 
   void
   get_status( DictionaryDatum& d ) const

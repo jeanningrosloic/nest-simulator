@@ -267,11 +267,11 @@ public:
     const bool requires_symmetric,
     const bool supports_wfr )
     : GenericConnectorModel< ConnectionT >( name,
-        /*is _primary=*/false,
-        has_delay,
-        requires_symmetric,
-        supports_wfr,
-        /*requires_clopath_archiving=*/false )
+      /*is _primary=*/false,
+      has_delay,
+      requires_symmetric,
+      supports_wfr,
+      /*requires_clopath_archiving=*/false )
     , pev_( 0 )
   {
     pev_ = new typename ConnectionT::EventType();

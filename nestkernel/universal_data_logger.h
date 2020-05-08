@@ -291,7 +291,8 @@ nest::UniversalDataLogger< HostNode >::DataLogger_::DataLogger_( const DataLoggi
       node_access_.clear();
       throw IllegalConnection(
         "UniversalDataLogger::connect_logging_device(): "
-        "Unknown recordable " + recvars[ j ].toString() );
+        "Unknown recordable "
+        + recvars[ j ].toString() );
     }
 
     node_access_.push_back( rec->second );
@@ -558,7 +559,8 @@ nest::DynamicUniversalDataLogger< HostNode >::DataLogger_::DataLogger_( const Da
       node_access_.clear();
       throw IllegalConnection(
         "DynamicUniversalDataLogger::connect_logging_device(): "
-        "Unknown recordable " + recvars[ j ].toString() );
+        "Unknown recordable "
+        + recvars[ j ].toString() );
     }
 
     node_access_.push_back( &( rec->second ) );

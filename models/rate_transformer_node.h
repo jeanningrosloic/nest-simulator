@@ -37,8 +37,8 @@
 #include "node.h"
 #include "normal_randomdev.h"
 #include "poisson_randomdev.h"
-#include "ring_buffer.h"
 #include "recordables_map.h"
+#include "ring_buffer.h"
 #include "universal_data_logger.h"
 
 namespace nest
@@ -113,8 +113,8 @@ public:
    */
 
   using Node::handle;
-  using Node::sends_secondary_event;
   using Node::handles_test_event;
+  using Node::sends_secondary_event;
 
   void handle( InstantaneousRateConnectionEvent& );
   void handle( DelayedRateConnectionEvent& );

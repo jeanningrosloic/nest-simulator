@@ -33,8 +33,8 @@
 
 // Includes from nestkernel:
 #include "exceptions.h"
-#include "parameter.h"
 #include "nest_datums.h"
+#include "parameter.h"
 
 // Includes from sli:
 #include "token.h"
@@ -109,11 +109,11 @@ public:
   }
 
   /**
-  * @param t parameter
-  * type is established by casts to all acceptedpossibilities
-  * @param nthread number of threads
-  * required to fix number pointers to the iterator (one for each thread)
-  */
+   * @param t parameter
+   * type is established by casts to all acceptedpossibilities
+   * @param nthread number of threads
+   * required to fix number pointers to the iterator (one for each thread)
+   */
   static ConnParameter* create( const Token&, const size_t );
 };
 

@@ -78,7 +78,7 @@ public:
   //! Create generator with given seed
   explicit MT19937( unsigned long );
 
-  ~MT19937(){};
+  ~MT19937() {};
 
   RngPtr
   clone( unsigned long s )

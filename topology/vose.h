@@ -55,11 +55,11 @@ class Vose
     BiasedCoin()
       : heads( 0 )
       , tails( 0 )
-      , probability( 0 ){};
+      , probability( 0 ) {};
     BiasedCoin( index h, index t, double p )
       : heads( h )
       , tails( t )
-      , probability( p ){};
+      , probability( p ) {};
   };
 
 public:

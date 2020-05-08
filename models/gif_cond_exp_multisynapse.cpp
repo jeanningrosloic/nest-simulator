@@ -25,10 +25,10 @@
 #ifdef HAVE_GSL
 
 // C++ includes:
-#include <limits>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
-#include <cstdio>
+#include <limits>
 
 // Includes from libnestutil:
 #include "dict_util.h"
@@ -42,12 +42,12 @@
 // Includes from sli:
 #include "dict.h"
 #include "dictutils.h"
-#include "integerdatum.h"
 #include "doubledatum.h"
+#include "integerdatum.h"
 
 #include "compose.hpp"
-#include "propagator_stability.h"
 #include "event.h"
+#include "propagator_stability.h"
 
 namespace nest
 {
@@ -168,7 +168,8 @@ nest::gif_cond_exp_multisynapse::State_::State_( const State_& s )
   y_ = s.y_;
 }
 
-nest::gif_cond_exp_multisynapse::State_& nest::gif_cond_exp_multisynapse::State_::operator=( const State_& s )
+nest::gif_cond_exp_multisynapse::State_&
+nest::gif_cond_exp_multisynapse::State_::operator=( const State_& s )
 {
   assert( this != &s ); // would be bad logical error in program
 
@@ -291,20 +292,20 @@ nest::gif_cond_exp_multisynapse::Parameters_::set( const DictionaryDatum& d, Nod
 
   if ( tau_sfa_.size() != q_sfa_.size() )
   {
-    throw BadProperty( String::compose(
-      "'tau_sfa' and 'q_sfa' need to have the same dimensions.\nSize of "
-      "tau_sfa: %1\nSize of q_sfa: %2",
-      tau_sfa_.size(),
-      q_sfa_.size() ) );
+    throw BadProperty(
+      String::compose( "'tau_sfa' and 'q_sfa' need to have the same dimensions.\nSize of "
+                       "tau_sfa: %1\nSize of q_sfa: %2",
+        tau_sfa_.size(),
+        q_sfa_.size() ) );
   }
 
   if ( tau_stc_.size() != q_stc_.size() )
   {
-    throw BadProperty( String::compose(
-      "'tau_stc' and 'q_stc' need to have the same dimensions.\nSize of "
-      "tau_stc: %1\nSize of q_stc: %2",
-      tau_stc_.size(),
-      q_stc_.size() ) );
+    throw BadProperty(
+      String::compose( "'tau_stc' and 'q_stc' need to have the same dimensions.\nSize of "
+                       "tau_stc: %1\nSize of q_stc: %2",
+        tau_stc_.size(),
+        q_stc_.size() ) );
   }
 
   if ( g_L_ <= 0 )

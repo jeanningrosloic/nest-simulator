@@ -172,7 +172,8 @@ nest::hh_psc_alpha::State_::State_( const State_& s )
   }
 }
 
-nest::hh_psc_alpha::State_& nest::hh_psc_alpha::State_::operator=( const State_& s )
+nest::hh_psc_alpha::State_&
+nest::hh_psc_alpha::State_::operator=( const State_& s )
 {
   assert( this != &s ); // would be bad logical error in program
   for ( size_t i = 0; i < STATE_VEC_SIZE; ++i )

@@ -1,5 +1,5 @@
 /*
- *  stdp_nn_pre-centered_connection.h
+ *  stdp_connection.h
  *
  *  This file is part of NEST.
  *
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef STDP_NN_PRE_CENTERED_CONNECTION_H
-#define STDP_NN_PRE_CENTERED_CONNECTION_H
+#ifndef TETZLAFF_CONNECTION_H
+#define TETZLAFF_CONNECTION_H
 
 // C++ includes:
 #include <cmath>
@@ -39,82 +39,63 @@
 namespace nest
 {
 
-/** @BeginDocumentation
-@ingroup Synapses
-@ingroup stdp
-
-Name: stdp_nn_pre-centered_synapse - Synapse type for spike-timing dependent
-plasticity with presynaptic-centered nearest-neighbour spike pairing
-scheme.
-
-Description:
-
-stdp_nn_pre-centered_synapse is a connector to create synapses with spike
-time dependent plasticity with the presynaptic-centered nearest-neighbour
-spike pairing scheme, as described in [1].
-
-Each presynaptic spike is taken into account in the STDP weight change rule
-with the nearest preceding postsynaptic one and the nearest succeeding
-postsynaptic one (instead of pairing with all spikes, like in stdp_synapse).
-So, when a presynaptic spike occurs, it is accounted in the depression rule
-with the nearest preceding postsynaptic one; and when a postsynaptic spike
-occurs, it is accounted in the facilitation rule with all preceding
-presynaptic spikes that were not earlier than the previous postsynaptic
-spike. For a clear illustration of this scheme see fig. 7B in [2].
-
-The pairs exactly coinciding (so that presynaptic_spike == postsynaptic_spike
-+ dendritic_delay), leading to zero delta_t, are discarded. In this case the
-concerned pre/postsynaptic spike is paired with the second latest preceding
-post/presynaptic one (for example, pre=={10 ms; 20 ms} and post=={20 ms} will
-result in a potentiation pair 20-to-10).
-
-The implementation involves two additional variables - presynaptic and
-postsynaptic traces [2]. The presynaptic trace decays exponentially over
-time with the time constant tau_plus, increases by 1 on a pre-spike
-occurrence, and is reset to 0 on a post-spike occurrence. The postsynaptic
-trace (implemented on the postsynaptic neuron side) decays with the time
-constant tau_minus and increases to 1 on a post-spike occurrence.
-
-Parameters:
-\verbatim embed:rst
-========= =======  ======================================================
- tau_plus  ms      Time constant of STDP window, potentiation
-                   (tau_minus defined in post-synaptic neuron)
- lambda    real    Step size
- alpha     real    Asymmetry parameter (scales depressing increments as
-                   alpha*lambda)
- mu_plus   real    Weight dependence exponent, potentiation
- mu_minus  real    Weight dependence exponent, depression
- Wmax      real    Maximum allowed weight
-========= =======  ======================================================
-\endverbatim
-
-Transmits: SpikeEvent
-
-References:
-
-\verbatim embed:rst
-.. [1] Izhikevich E. M., Desai N. S. (2003) Relating STDP to BCM,
-       Neural Comput. 15, 1511--1523
-
-.. [2] Morrison A., Diesmann M., and Gerstner W. (2008) Phenomenological
-       models of synaptic plasticity based on spike timing,
-       Biol. Cybern. 98, 459--478
-\endverbatim
-
-FirstVersion: March 2006
-
-Author: Moritz Helias, Abigail Morrison
-
-Adapted by: Philipp Weidel, Alex Serenko
-
-SeeAlso: stdp_synapse, stdp_nn_symm_synapse
+/* BeginDocumentation
+  Name: tetzlaff_synapse - Synapse type for spike-timing dependent
+    plasticity with homeostatic scaling.
+  Description:
+    tetzlaff_synapse is a connector to create synapses with spike time
+    dependent plasticity. Unlike stdp_synapse, we use the update equations:
+    \Delta w = \lambda * ( x * y + \kappa * ( y_{tgt} - y ) * w^2 )
+    where x and y are the pre- and postsynaptic traces (augmented by one when
+    the neuron spikes and decaying excponentially wrt. tau_plus (pre) or
+    tau_minus (post)), y_tgt is a constant postsynaptic target that scales
+    postsynaptic activity, lambda and kappa are learning rates.
+    Note that the weight updade above is performed every time step in its
+    original formulation [1]. For this reason, the weight update equation that
+    is performed at each spike emission can be written as if follows:
+    \Delta w = \lambda * (
+      ( kplus_1 * kminus_1 - kplus_2 * kminus_2 ) * \tau_{conv}
+      + \kappa * w^2 * (
+        kminus_{tgt} * ( t_2 - t_1 ) - ( kminus_1 - kminus_2 ) * \tau_-
+      )
+    )
+    where:
+      - \tau_{conv} = \tau_+ * \tau_- / ( \tau_+ + \tau_- )
+      - the index 1 describes states at the time of the previous spike
+      - the index 2 describes states at the current spike time
+      - kplus/kminus are pre-/postsynaptic traces.
+  Parameters:
+    lambda          double - Step size / Learning rate
+    Wmax            double - Maximum allowed weight, note that this scales each
+                            weight update
+    tau_plus        double - Time constant of the presynaptic trace (ms)
+    tau_minus       double - Time constant of the postsynaptic trace (ms) note:
+                             should be the same as set in the postsyn. neuron
+    kappa           double - Homeostatic learning rate (regulates postsynaptic
+                             scaling step size)
+    kminus_tgt      double - Homeostatic scaling level (determines the "desired"
+                             postsyn. activity/firing rate)
+  Transmits: SpikeEvent
+  References:
+    [1] Tetzlaff, C., Kolodziejski, C., Timme, M., Tsodyks, M., & Wörgötter,
+        F. (2013). Synaptic scaling enables dynamically distinct short-and
+        long-term memory formation. BMC neuroscience, 14(1), P415.
+    [2] Tetzlaff, C., Kolodziejski, C., Timme, M., & Wörgötter, F. (2011).
+        Synaptic scaling in combination with many generic plasticity mechanisms
+        stabilizes circuit connectivity. Frontiers in computational
+        neuroscience, 5, 47.
+  Adapted from stdp_synapse:
+      FirstVersion: March 2006
+      Author: Moritz Helias, Abigail Morrison
+      Adapted by: Philipp Weidel
+  Author: Loïc Jeanningros (loic.jeanningros@gmail.com)
+  SeeAlso: synapsedict, stdp_synapse
 */
 
 // connections are templates of target identifier type (used for pointer /
 // target index addressing) derived from generic connection template
 template < typename targetidentifierT >
-class STDPNNPreCenteredConnection : public Connection< targetidentifierT >
+class TetzlaffConnection : public Connection< targetidentifierT >
 {
 
 public:
@@ -125,14 +106,14 @@ public:
    * Default Constructor.
    * Sets default values for all parameters. Needed by GenericConnectorModel.
    */
-  STDPNNPreCenteredConnection();
+  TetzlaffConnection();
 
 
   /**
    * Copy constructor.
    * Needs to be defined properly in order for GenericConnector to work.
    */
-  STDPNNPreCenteredConnection( const STDPNNPreCenteredConnection& );
+  TetzlaffConnection( const TetzlaffConnection& );
 
   // Explicitly declare all methods inherited from the dependent base
   // ConnectionBase. This avoids explicit name prefixes in all places these
@@ -192,28 +173,33 @@ public:
 
 private:
   double
-  facilitate_( double w, double kplus )
+  update_( double w, double kplus1, double kminus1, double kplus2, double kminus2, double minus_dt, double tau_conv_ )
   {
-    double norm_w = ( w / Wmax_ ) + ( lambda_ * std::pow( 1.0 - ( w / Wmax_ ), mu_plus_ ) * kplus );
-    return norm_w < 1.0 ? norm_w * Wmax_ : Wmax_;
-  }
+    if ( lambda_ == 0.0 )
+      return w;
 
-  double
-  depress_( double w, double kminus )
-  {
-    double norm_w = ( w / Wmax_ ) - ( alpha_ * lambda_ * std::pow( w / Wmax_, mu_minus_ ) * kminus );
-    return norm_w > 0.0 ? norm_w * Wmax_ : 0.0;
+    double dW = lambda_
+      * ( ( kplus1 * kminus1 - kplus2 * kminus2 ) * tau_conv_
+        + kappa_ * std::pow( w, 2 ) * ( kminus_tgt_ * ( -minus_dt ) - ( kminus1 - kminus2 ) * tau_minus_ ) );
+
+    double new_w = w + dW;
+
+    if ( new_w < 0.0 )
+      return 0.0;
+    if ( new_w > Wmax_ )
+      return Wmax_;
+    return new_w;
   }
 
   // data members of each connection
   double weight_;
   double tau_plus_;
+  double tau_minus_;
   double lambda_;
-  double alpha_;
-  double mu_plus_;
-  double mu_minus_;
   double Wmax_;
   double Kplus_;
+  double kappa_;
+  double kminus_tgt_;
 
   double t_lastspike_;
 };
@@ -227,10 +213,11 @@ private:
  */
 template < typename targetidentifierT >
 inline void
-STDPNNPreCenteredConnection< targetidentifierT >::send( Event& e, thread t, const CommonSynapseProperties& )
+TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonSynapseProperties& )
 {
   // synapse STDP depressing/facilitation dynamics
-  double t_spike = e.get_stamp().get_ms();
+  const double t_spike = e.get_stamp().get_ms();
+  const double tau_conv_ = tau_plus_ * tau_minus_ / ( tau_plus_ + tau_minus_ );
 
   // use accessor functions (inherited from Connection< >) to obtain delay and
   // target
@@ -250,39 +237,39 @@ STDPNNPreCenteredConnection< targetidentifierT >::send( Event& e, thread t, cons
   // incremented by Archiving_Node::register_stdp_connection(). See bug #218 for
   // details.
   target->get_history( t_lastspike_ - dendritic_delay, t_spike - dendritic_delay, &start, &finish );
-  // If there were no post-synaptic spikes between the current pre-synaptic one
-  // t_spike and the previous pre-synaptic one t_lastspike_, there are no pairs
-  // to account.
-  if ( start != finish )
+  // weight update due to post-synaptic spikes since last pre-synaptic spike
+  double minus_dt;
+  double Kminus = target->get_K_value( t_lastspike_ - dendritic_delay );
+  while ( start != finish )
   {
-    // facilitation due to the first post-synaptic spike start->t_
-    // since the previous pre-synaptic spike t_lastspike_
-
-    double minus_dt;
     minus_dt = t_lastspike_ - ( start->t_ + dendritic_delay );
-
     // get_history() should make sure that
-    // start->t_ > t_lastspike_ - dendritic_delay, i.e. minus_dt < 0
+    // start->t_ > t_lastspike - dendritic_delay, i.e. minus_dt < 0
     assert( minus_dt < -1.0 * kernel().connection_manager.get_stdp_eps() );
+    // assert( minus_dt <= 0.0 );
+    weight_ = update_( weight_,
+      Kplus_,
+      Kminus,
+      Kplus_ * std::exp( minus_dt / tau_plus_ ),
+      Kminus * std::exp( minus_dt / tau_minus_ ),
+      minus_dt,
+      tau_conv_ );
 
-    weight_ = facilitate_( weight_, Kplus_ * std::exp( minus_dt / tau_plus_ ) );
-
-    // According to the presynaptic-centered nearest-neighbour scheme,
-    // a postsynaptic spike
-    // (we now know there was at least one between t_lastspike_ and t_spike)
-    // erases the state of the synapse,
-    // and all the preceding presynaptic spikes are forgotten.
-    Kplus_ = 0;
+    Kplus_ = Kplus_ * std::exp( minus_dt / tau_plus_ );
+    Kminus = Kminus * std::exp( minus_dt / tau_minus_ ) + 1.0;
+    t_lastspike_ = ( start->t_ + dendritic_delay );
+    ++start;
   }
+  // weight update due to pre-synaptic spike
+  minus_dt = t_lastspike_ - t_spike;
 
-  // depression due to the latest post-synaptic spike finish->t_
-  // before the current pre-synaptic spike t_spike
-  double nearest_neighbor_Kminus;
-  double value_to_throw_away; // discard Kminus and Kminus_triplet here
-  target->get_K_values( t_spike - dendritic_delay, value_to_throw_away, nearest_neighbor_Kminus, value_to_throw_away );
-  weight_ = depress_( weight_, nearest_neighbor_Kminus );
-
-  Kplus_ = Kplus_ * std::exp( ( t_lastspike_ - t_spike ) / tau_plus_ ) + 1.0;
+  weight_ = update_( weight_,
+    Kplus_,
+    Kminus,
+    Kplus_ * std::exp( minus_dt / tau_plus_ ),
+    Kminus * std::exp( minus_dt / tau_minus_ ),
+    minus_dt,
+    tau_conv_ );
 
   e.set_receiver( *target );
   e.set_weight( weight_ );
@@ -292,70 +279,71 @@ STDPNNPreCenteredConnection< targetidentifierT >::send( Event& e, thread t, cons
   e.set_rport( get_rport() );
   e();
 
+  Kplus_ = Kplus_ * std::exp( ( t_lastspike_ - t_spike ) / tau_plus_ ) + 1.0;
+
   t_lastspike_ = t_spike;
 }
 
 
 template < typename targetidentifierT >
-STDPNNPreCenteredConnection< targetidentifierT >::STDPNNPreCenteredConnection()
+TetzlaffConnection< targetidentifierT >::TetzlaffConnection()
   : ConnectionBase()
   , weight_( 1.0 )
   , tau_plus_( 20.0 )
+  , tau_minus_( 20.0 )
   , lambda_( 0.01 )
-  , alpha_( 1.0 )
-  , mu_plus_( 1.0 )
-  , mu_minus_( 1.0 )
   , Wmax_( 100.0 )
   , Kplus_( 0.0 )
+  , kappa_( 0.01 )
+  , kminus_tgt_( 0.0 )
   , t_lastspike_( 0.0 )
 {
 }
 
 template < typename targetidentifierT >
-STDPNNPreCenteredConnection< targetidentifierT >::STDPNNPreCenteredConnection(
-  const STDPNNPreCenteredConnection< targetidentifierT >& rhs )
+TetzlaffConnection< targetidentifierT >::TetzlaffConnection( const TetzlaffConnection< targetidentifierT >& rhs )
   : ConnectionBase( rhs )
   , weight_( rhs.weight_ )
   , tau_plus_( rhs.tau_plus_ )
+  , tau_minus_( rhs.tau_minus_ )
   , lambda_( rhs.lambda_ )
-  , alpha_( rhs.alpha_ )
-  , mu_plus_( rhs.mu_plus_ )
-  , mu_minus_( rhs.mu_minus_ )
   , Wmax_( rhs.Wmax_ )
   , Kplus_( rhs.Kplus_ )
+  , kappa_( rhs.kappa_ )
+  , kminus_tgt_( rhs.kminus_tgt_ )
   , t_lastspike_( rhs.t_lastspike_ )
 {
 }
 
 template < typename targetidentifierT >
 void
-STDPNNPreCenteredConnection< targetidentifierT >::get_status( DictionaryDatum& d ) const
+TetzlaffConnection< targetidentifierT >::get_status( DictionaryDatum& d ) const
 {
   ConnectionBase::get_status( d );
   def< double >( d, names::weight, weight_ );
   def< double >( d, names::tau_plus, tau_plus_ );
+  def< double >( d, names::tau_minus, tau_minus_ );
   def< double >( d, names::lambda, lambda_ );
-  def< double >( d, names::alpha, alpha_ );
-  def< double >( d, names::mu_plus, mu_plus_ );
-  def< double >( d, names::mu_minus, mu_minus_ );
   def< double >( d, names::Wmax, Wmax_ );
+  def< double >( d, names::kappa, kappa_ );
+  def< double >( d, names::kminus_tgt, kminus_tgt_ );
   def< long >( d, names::size_of, sizeof( *this ) );
 }
 
 template < typename targetidentifierT >
 void
-STDPNNPreCenteredConnection< targetidentifierT >::set_status( const DictionaryDatum& d, ConnectorModel& cm )
+TetzlaffConnection< targetidentifierT >::set_status( const DictionaryDatum& d, ConnectorModel& cm )
 {
   ConnectionBase::set_status( d, cm );
   updateValue< double >( d, names::weight, weight_ );
   updateValue< double >( d, names::tau_plus, tau_plus_ );
+  updateValue< double >( d, names::tau_minus, tau_minus_ );
   updateValue< double >( d, names::lambda, lambda_ );
-  updateValue< double >( d, names::alpha, alpha_ );
-  updateValue< double >( d, names::mu_plus, mu_plus_ );
-  updateValue< double >( d, names::mu_minus, mu_minus_ );
   updateValue< double >( d, names::Wmax, Wmax_ );
+  updateValue< double >( d, names::kappa, kappa_ );
+  updateValue< double >( d, names::kminus_tgt, kminus_tgt_ );
 
-  // check if weight_ and Wmax_ have the same sign
+  // check if weight_ and Wmax_ has the same sign
   if ( not( ( ( weight_ >= 0 ) - ( weight_ < 0 ) ) == ( ( Wmax_ >= 0 ) - ( Wmax_ < 0 ) ) ) )
   {
     throw BadProperty( "Weight and Wmax must have same sign." );
@@ -364,4 +352,4 @@ STDPNNPreCenteredConnection< targetidentifierT >::set_status( const DictionaryDa
 
 } // of namespace nest
 
-#endif // of #ifndef STDP_NN_PRE_CENTERED_CONNECTION_H
+#endif // of #ifndef TETZLAFF_CONNECTION_H

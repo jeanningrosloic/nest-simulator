@@ -115,7 +115,8 @@ private:
   long range_; //!< nmax_ - nmin_ + 1
 };
 
-inline double UniformIntRandomDev::operator()( RngPtr rthrd ) const
+inline double
+UniformIntRandomDev::operator()( RngPtr rthrd ) const
 {
   return static_cast< double >( ldev( rthrd ) );
 }

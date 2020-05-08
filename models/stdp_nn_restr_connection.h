@@ -132,8 +132,8 @@ public:
   // ConnectionBase. This avoids explicit name prefixes in all places these
   // functions are used. Since ConnectionBase depends on the template parameter,
   // they are not automatically found in the base class.
-  using ConnectionBase::get_delay_steps;
   using ConnectionBase::get_delay;
+  using ConnectionBase::get_delay_steps;
   using ConnectionBase::get_rport;
   using ConnectionBase::get_target;
 
@@ -271,7 +271,7 @@ STDPNNRestrConnection< targetidentifierT >::send( Event& e, thread t, const Comm
       value_to_throw_away, // discard Kminus
       nearest_neighbor_Kminus,
       value_to_throw_away // discard Kminus_triplet
-      );
+    );
     weight_ = depress_( weight_, nearest_neighbor_Kminus );
   }
 

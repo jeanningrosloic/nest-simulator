@@ -278,7 +278,8 @@ public:
     return p == NULL;
   }
 
-  bool operator not( void ) const
+  bool
+  operator not( void ) const
   {
     return p == NULL;
   }
@@ -297,14 +298,16 @@ public:
     return not empty();
   }
 
-  Datum* operator->() const
+  Datum*
+  operator->() const
   {
     //      assert(p!= NULL);
     return p;
   }
 
 
-  Datum& operator*() const
+  Datum&
+  operator*() const
   {
     //      assert(p != NULL);
     return *p;
@@ -318,7 +321,8 @@ public:
   }
 
 
-  Token& operator=( const Token& c_s )
+  Token&
+  operator=( const Token& c_s )
   {
     if ( c_s.p == p )
     {
@@ -339,7 +343,8 @@ public:
     return *this;
   }
 
-  Token& operator=( Datum* p_s )
+  Token&
+  operator=( Datum* p_s )
   {
     if ( p != p_s )
     {
@@ -354,7 +359,8 @@ public:
   }
 
 
-  bool operator==( const Token& t ) const
+  bool
+  operator==( const Token& t ) const
   {
     if ( p == t.p )
     {
@@ -365,7 +371,8 @@ public:
   }
 
   // define != explicitly --- HEP 2001-08-09
-  bool operator!=( const Token& t ) const
+  bool
+  operator!=( const Token& t ) const
   {
     return not( *this == t );
   }

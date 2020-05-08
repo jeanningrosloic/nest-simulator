@@ -30,10 +30,10 @@
 
 // Includes from sli:
 #include "dict.h"
+#include "sharedptrdatum.h"
 #include "slifunction.h"
 #include "slimodule.h"
 #include "slitype.h"
-#include "sharedptrdatum.h"
 
 #include "generic_factory.h"
 

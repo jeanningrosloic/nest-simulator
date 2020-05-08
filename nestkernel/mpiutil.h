@@ -24,8 +24,8 @@
 
 #include <cstdint>
 #include <limits>
-#include <vector>
 #include <mpi.h>
+#include <vector>
 
 namespace arb
 {

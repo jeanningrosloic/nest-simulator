@@ -58,7 +58,7 @@ public:
     , begin_of_free_storage( NULL )
     , end_of_free_storage( NULL )
     , alloc_block_size( ARRAY_ALLOC_SIZE )
-    , refs_( 1 ){};
+    , refs_( 1 ) {};
 
   TokenArrayObj( size_t, const Token& = Token(), size_t = 0 );
   TokenArrayObj( const TokenArrayObj& );
@@ -89,12 +89,14 @@ public:
     return ( size_t )( end_of_free_storage - p );
   }
 
-  Token& operator[]( size_t i )
+  Token&
+  operator[]( size_t i )
   {
     return p[ i ];
   }
 
-  const Token& operator[]( size_t i ) const
+  const Token&
+  operator[]( size_t i ) const
   {
     return p[ i ];
   }

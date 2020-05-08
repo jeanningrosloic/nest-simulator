@@ -44,7 +44,7 @@ struct basic_spike
 {
   using id_type = I;
 
-  id_type source = id_type{};
+  id_type source = id_type {};
   time_type time = -1;
 
   basic_spike() = default;
@@ -55,7 +55,8 @@ struct basic_spike
   {
   }
 
-  friend bool operator==( const basic_spike& left, const basic_spike& right )
+  friend bool
+  operator==( const basic_spike& left, const basic_spike& right )
   {
     return left.time == right.time && left.source == right.source;
   }
@@ -176,14 +177,8 @@ get_comm_info( bool is_arbor, MPI_Comm comm )
   MPI_Allgather( &info.global_rank, 1, MPI_INT, local_ranks.data(), 1, MPI_INT, info.comm );
   std::sort( local_ranks.begin(), local_ranks.end() );
 
-  auto first_missing = []( const std::vector< int >& x )
-  {
-    auto it = std::adjacent_find( x.begin(),
-      x.end(),
-      []( int left, int right )
-      {
-        return ( right - left ) != 1;
-      } );
+  auto first_missing = []( const std::vector< int >& x ) {
+    auto it = std::adjacent_find( x.begin(), x.end(), []( int left, int right ) { return ( right - left ) != 1; } );
     return it == x.end() ? x.back() + 1 : ( *it ) + 1;
   };
 

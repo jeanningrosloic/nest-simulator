@@ -40,14 +40,14 @@
 #include "amat2_psc_exp.h"
 #include "erfc_neuron.h"
 #include "gauss_rate.h"
-#include "gif_psc_exp.h"
-#include "gif_psc_exp_multisynapse.h"
 #include "gif_cond_exp.h"
 #include "gif_cond_exp_multisynapse.h"
 #include "gif_pop_psc_exp.h"
+#include "gif_psc_exp.h"
+#include "gif_psc_exp_multisynapse.h"
+#include "ginzburg_neuron.h"
 #include "glif_cond.h"
 #include "glif_psc.h"
-#include "ginzburg_neuron.h"
 #include "hh_cond_beta_gap_traub.h"
 #include "hh_cond_exp_traub.h"
 #include "hh_psc_alpha.h"
@@ -83,10 +83,10 @@
 #include "ac_generator.h"
 #include "dc_generator.h"
 #include "gamma_sup_generator.h"
+#include "inhomogeneous_poisson_generator.h"
 #include "mip_generator.h"
 #include "noise_generator.h"
 #include "poisson_generator.h"
-#include "inhomogeneous_poisson_generator.h"
 #include "ppd_sup_generator.h"
 #include "pulsepacket_generator.h"
 #include "sinusoidal_gamma_generator.h"
@@ -127,11 +127,12 @@
 #include "stdp_connection_facetshw_hom_impl.h"
 #include "stdp_connection_hom.h"
 #include "stdp_dopa_connection.h"
+#include "stdp_nn_pre-centered_connection.h"
 #include "stdp_nn_restr_connection.h"
 #include "stdp_nn_symm_connection.h"
-#include "stdp_nn_pre-centered_connection.h"
 #include "stdp_pl_connection_hom.h"
 #include "stdp_triplet_connection.h"
+#include "tetzlaff_connection.h"
 #include "tsodyks2_connection.h"
 #include "tsodyks_connection.h"
 #include "tsodyks_connection_hom.h"
@@ -311,6 +312,7 @@ ModelsModule::init( SLIInterpreter* )
   register_connection_model< STDPNNPreCenteredConnection >( "stdp_nn_pre-centered_synapse" );
   register_connection_model< STDPPLConnectionHom >( "stdp_pl_synapse_hom" );
   register_connection_model< STDPTripletConnection >( "stdp_triplet_synapse" );
+  register_connection_model< TetzlaffConnection >( "tetzlaff_synapse" );
   register_connection_model< TsodyksConnection >( "tsodyks_synapse" );
   register_connection_model< TsodyksConnectionHom >( "tsodyks_synapse_hom" );
   register_connection_model< Tsodyks2Connection >( "tsodyks2_synapse" );

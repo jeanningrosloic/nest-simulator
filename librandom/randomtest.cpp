@@ -32,7 +32,6 @@
 
 // Includes from librandom:
 #include "binomial_randomdev.h"
-#include "binomial_randomdev.h"
 #include "exp_randomdev.h"
 #include "gamma_randomdev.h"
 #include "gslrandomgen.h"
@@ -145,9 +144,7 @@ main( void )
   librandom::GslRandomGen::add_gsl_rngs( rngdict );
 
   // run all available RNG
-  std::cout << std::endl
-            << "===========================================================" << std::endl
-            << std::endl;
+  std::cout << std::endl << "===========================================================" << std::endl << std::endl;
   std::cout << "Available random generators---Generating " << Ngen << " numbers" << std::endl;
   std::cout << "-----------------------------------------------------------" << std::endl;
   // check all implementations
@@ -163,8 +160,7 @@ main( void )
   std::cout << std::left << std::setw( 25 ) << "Expected"
             << ": ";
   printres( 0.5, 1.0 / std::sqrt( 12.0 ), -1 );
-  std::cout << std::endl
-            << "===========================================================" << std::endl;
+  std::cout << std::endl << "===========================================================" << std::endl;
 
   // random deviates
   std::cout << std::endl
@@ -245,8 +241,7 @@ main( void )
     std::cout << std::endl;
   }
 
-  std::cout << std::endl
-            << "===========================================================" << std::endl;
+  std::cout << std::endl << "===========================================================" << std::endl;
 
   return 0;
 }

@@ -203,7 +203,7 @@ nest::ConnectionManager::get_synapse_status( const index source_node_id,
   // receiving devices
   if ( ( source->has_proxies() and target->has_proxies() and connections_[ tid ][ syn_id ] != NULL )
     or ( ( source->has_proxies() and not target->has_proxies() and not target->local_receiver()
-         and connections_[ tid ][ syn_id ] != NULL ) ) )
+      and connections_[ tid ][ syn_id ] != NULL ) ) )
   {
     connections_[ tid ][ syn_id ]->get_synapse_status( tid, lcid, dict );
   }
@@ -244,7 +244,7 @@ nest::ConnectionManager::set_synapse_status( const index source_node_id,
     // receiving devices
     if ( ( source->has_proxies() and target->has_proxies() and connections_[ tid ][ syn_id ] != NULL )
       or ( ( source->has_proxies() and not target->has_proxies() and not target->local_receiver()
-           and connections_[ tid ][ syn_id ] != NULL ) ) )
+        and connections_[ tid ][ syn_id ] != NULL ) ) )
     {
       connections_[ tid ][ syn_id ]->set_synapse_status( lcid, dict, cm );
     }
@@ -610,10 +610,10 @@ nest::ConnectionManager::increase_connection_count( const thread tid, const syni
   ++num_connections_[ tid ][ syn_id ];
   if ( num_connections_[ tid ][ syn_id ] >= MAX_LCID )
   {
-    throw KernelException( String::compose(
-      "Too many connections: at most %1 connections supported per virtual "
-      "process and synapse model.",
-      MAX_LCID ) );
+    throw KernelException(
+      String::compose( "Too many connections: at most %1 connections supported per virtual "
+                       "process and synapse model.",
+        MAX_LCID ) );
   }
 }
 

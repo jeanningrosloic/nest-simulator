@@ -26,8 +26,8 @@
 // C includes:
 #include <memory>
 
-#include "recording_backend.h"
 #include "mpiutil.h"
+#include "recording_backend.h"
 
 namespace nest
 {

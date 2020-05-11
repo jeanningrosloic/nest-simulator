@@ -21,8 +21,8 @@
  */
 
 // C includes:
-#include <mpi.h>
 #include <memory>
+#include <mpi.h>
 
 // Includes from libnestutil:
 #include "compose.hpp"
@@ -31,9 +31,9 @@
 #include "recording_device.h"
 #include "vp_manager_impl.h"
 
-#include "recording_backend_arbor.h"
-#include "mpiutil_impl.h"
 #include "exceptions.h"
+#include "mpiutil_impl.h"
+#include "recording_backend_arbor.h"
 
 // this is here to hide the arbor internal header info from nest
 struct nest::ArborInternal

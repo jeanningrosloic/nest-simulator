@@ -45,7 +45,7 @@ public:
   static SLIType RdvFactoryType; // random deviate generator factory
 
 
-  RandomNumbers(){};
+  RandomNumbers() {};
   ~RandomNumbers();
 
   const std::string

@@ -182,7 +182,7 @@ cg_set_masks( ConnectionGeneratorDatum& cg, const NodeCollectionPTR sources, con
  * same. This could be solved by making the ConnectionGenerator
  * interface MPI aware and communicating the masks during connection
  * setup.
-*/
+ */
 void
 cg_create_masks( std::vector< ConnectionGenerator::Mask >& masks, RangeSet& sources, RangeSet& targets )
 {
@@ -276,7 +276,8 @@ cg_get_right_border( index left, size_t step, const NodeCollectionPTR node_ids )
     // (i.e. we're back at an already visited index), we found the
     // right border of the contiguous range (last_i) and return it.
     if ( ( i == static_cast< long >( node_ids->size() ) - 1
-           and ( *node_ids )[ i ] - ( *node_ids )[ left ] == i - static_cast< index >( left ) ) or i == leftmost_r )
+           and ( *node_ids )[ i ] - ( *node_ids )[ left ] == i - static_cast< index >( left ) )
+      or i == leftmost_r )
     {
       return last_i;
     }

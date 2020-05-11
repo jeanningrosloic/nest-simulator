@@ -168,13 +168,15 @@ ClippedRedrawContinuousRandomDev< BaseRDV >::get_status( DictionaryDatum& d ) co
 }
 
 template < typename BaseRDV >
-inline double ClippedRedrawContinuousRandomDev< BaseRDV >::operator()( void )
+inline double
+ClippedRedrawContinuousRandomDev< BaseRDV >::operator()( void )
 {
   return ( *this )( this->rng_ );
 }
 
 template < typename BaseRDV >
-inline double ClippedRedrawContinuousRandomDev< BaseRDV >::operator()( RngPtr r ) const
+inline double
+ClippedRedrawContinuousRandomDev< BaseRDV >::operator()( RngPtr r ) const
 {
   double value;
 
@@ -205,9 +207,9 @@ public:
   ClippedRedrawDiscreteRandomDev( RngPtr );
   ClippedRedrawDiscreteRandomDev(); // threaded
 
-// Forwarding operators are explicitly defined here,
-// to ensure that they forward to the clipped generator.
-// Null-pointer checking is done in the underlying generator.
+  // Forwarding operators are explicitly defined here,
+  // to ensure that they forward to the clipped generator.
+  // Null-pointer checking is done in the underlying generator.
 
 #if not defined( HAVE_XLC_ICE_ON_USING ) and not defined( IS_K )
   using RandomDev::operator();
@@ -281,13 +283,15 @@ ClippedRedrawDiscreteRandomDev< BaseRDV >::get_status( DictionaryDatum& d ) cons
 }
 
 template < typename BaseRDV >
-inline double ClippedRedrawDiscreteRandomDev< BaseRDV >::operator()( void )
+inline double
+ClippedRedrawDiscreteRandomDev< BaseRDV >::operator()( void )
 {
   return ( *this )( this->rng_ );
 }
 
 template < typename BaseRDV >
-inline double ClippedRedrawDiscreteRandomDev< BaseRDV >::operator()( RngPtr r ) const
+inline double
+ClippedRedrawDiscreteRandomDev< BaseRDV >::operator()( RngPtr r ) const
 {
   double value;
 
@@ -410,13 +414,15 @@ ClippedToBoundaryContinuousRandomDev< BaseRDV >::get_status( DictionaryDatum& d 
 }
 
 template < typename BaseRDV >
-inline double ClippedToBoundaryContinuousRandomDev< BaseRDV >::operator()( void )
+inline double
+ClippedToBoundaryContinuousRandomDev< BaseRDV >::operator()( void )
 {
   return ( *this )( this->rng_ );
 }
 
 template < typename BaseRDV >
-inline double ClippedToBoundaryContinuousRandomDev< BaseRDV >::operator()( RngPtr r ) const
+inline double
+ClippedToBoundaryContinuousRandomDev< BaseRDV >::operator()( RngPtr r ) const
 {
   const double value = BaseRDV::operator()( r );
   if ( value < min_ )
@@ -453,9 +459,9 @@ public:
   ClippedToBoundaryDiscreteRandomDev( RngPtr );
   ClippedToBoundaryDiscreteRandomDev(); // threaded
 
-// Forwarding operators are explicitly defined here,
-// to ensure that they forward to the clipped generator.
-// Null-pointer checking is done in the underlying generator.
+  // Forwarding operators are explicitly defined here,
+  // to ensure that they forward to the clipped generator.
+  // Null-pointer checking is done in the underlying generator.
 
 #if not defined( HAVE_XLC_ICE_ON_USING ) and not defined( IS_K )
   using RandomDev::operator();
@@ -529,13 +535,15 @@ ClippedToBoundaryDiscreteRandomDev< BaseRDV >::get_status( DictionaryDatum& d ) 
 }
 
 template < typename BaseRDV >
-inline double ClippedToBoundaryDiscreteRandomDev< BaseRDV >::operator()( void )
+inline double
+ClippedToBoundaryDiscreteRandomDev< BaseRDV >::operator()( void )
 {
   return ( *this )( this->rng_ );
 }
 
 template < typename BaseRDV >
-inline double ClippedToBoundaryDiscreteRandomDev< BaseRDV >::operator()( RngPtr r ) const
+inline double
+ClippedToBoundaryDiscreteRandomDev< BaseRDV >::operator()( RngPtr r ) const
 {
   const double value = BaseRDV::operator()( r );
   if ( value < min_ )

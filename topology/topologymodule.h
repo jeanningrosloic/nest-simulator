@@ -24,12 +24,12 @@
 #define TOPOLOGYMODULE_H
 
 // Includes from nestkernel:
-#include "generic_factory.h"
 #include "exceptions.h"
+#include "generic_factory.h"
 
 // Includes from sli:
-#include "slimodule.h"
 #include "sharedptrdatum.h"
+#include "slimodule.h"
 
 // Includes from topology:
 #include "ntree.h"

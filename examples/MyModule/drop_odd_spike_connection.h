@@ -48,7 +48,7 @@ template < typename targetidentifierT >
 class DropOddSpikeConnection : public nest::Connection< targetidentifierT >
 {
 private:
-  double weight_{ 1.0 }; //!< Synaptic weight
+  double weight_ { 1.0 }; //!< Synaptic weight
 
 public:
   //! Type to use for representing common synapse properties

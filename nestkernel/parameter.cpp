@@ -20,8 +20,8 @@
  *
  */
 
-#include "node_collection.h"
 #include "node.h"
+#include "node_collection.h"
 #include "topology.h"
 
 // includes from sli
@@ -145,10 +145,10 @@ SpatialDistanceParameter::value( librandom::RngPtr& rng,
     }
     return std::abs( layer.compute_displacement( source_pos, target_pos, dimension_ - 1 ) );
   default:
-    throw KernelException( String::compose(
-      "SpatialDistanceParameter dimension must be either 0 for unspecified,"
-      " or 1-3 for x-z. Got ",
-      dimension_ ) );
+    throw KernelException(
+      String::compose( "SpatialDistanceParameter dimension must be either 0 for unspecified,"
+                       " or 1-3 for x-z. Got ",
+        dimension_ ) );
     break;
   }
 }

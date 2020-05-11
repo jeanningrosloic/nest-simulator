@@ -111,8 +111,8 @@ public:
   // ConnectionBase. This avoids explicit name prefixes in all places these
   // functions are used. Since ConnectionBase depends on the template parameter,
   // they are not automatically found in the base class.
-  using ConnectionBase::get_delay_steps;
   using ConnectionBase::get_delay;
+  using ConnectionBase::get_delay_steps;
   using ConnectionBase::get_rport;
   using ConnectionBase::get_target;
 
@@ -167,13 +167,13 @@ private:
   double
   facilitate_( double w, double kplus )
   {
-    if(lambda_ == 0.0)
+    if ( lambda_ == 0.0 )
       return w;
 
-    double K_w = std::exp(mu_plus_ * w);
+    double K_w = std::exp( mu_plus_ * w );
     double F_t = kplus;
 
-    double dW = lambda_ * (K_w * F_t - beta_);
+    double dW = lambda_ * ( K_w * F_t - beta_ );
     double new_w = w + dW;
 
     return new_w < Wmax_ ? new_w : Wmax_;
@@ -182,13 +182,13 @@ private:
   double
   depress_( double w, double kminus )
   {
-    if(lambda_ == 0.0)
+    if ( lambda_ == 0.0 )
       return w;
 
-    double K_w = std::exp(mu_minus_ * w);
+    double K_w = std::exp( mu_minus_ * w );
     double F_t = kminus;
 
-    double dW = lambda_ * (-alpha_ * K_w * F_t - beta_);
+    double dW = lambda_ * ( -alpha_ * K_w * F_t - beta_ );
     double new_w = w + dW;
 
     return new_w > 0.0 ? new_w : 0.0;
@@ -280,7 +280,7 @@ JonkeConnection< targetidentifierT >::JonkeConnection()
   , mu_minus_( 0.0 )
   , Wmax_( 100.0 )
   , Kplus_( 0.0 )
-  , beta_ ( 0.0 )
+  , beta_( 0.0 )
   , t_lastspike_( 0.0 )
 {
 }

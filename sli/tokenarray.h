@@ -107,7 +107,7 @@ protected:
 
 public:
   TokenArray( void )
-    : data( new TokenArrayObj() ){};
+    : data( new TokenArrayObj() ) {};
 
   explicit TokenArray( size_t n, const Token& t = Token(), size_t alloc = 128 )
     : data( new TokenArrayObj( n, t, alloc ) )
@@ -177,13 +177,15 @@ public:
   // Use the member function get(size_t) const to force
   // constness.
 
-  Token& operator[]( size_t i )
+  Token&
+  operator[]( size_t i )
   {
     clone();
     return ( *data )[ i ];
   }
 
-  const Token& operator[]( size_t i ) const
+  const Token&
+  operator[]( size_t i ) const
   {
     return ( *data )[ i ];
   }
@@ -289,7 +291,8 @@ public:
     data->push_back_move( t );
   }
 
-  void assign_move( size_t i, Token& t ) // 8.4.98 Diesmann
+  void
+  assign_move( size_t i, Token& t ) // 8.4.98 Diesmann
   {
     clone();
     data->assign_move( data->begin() + i, t );
@@ -311,7 +314,8 @@ public:
     }
   }
 
-  void insert_move( size_t i, TokenArray& a ) // 8.4.98 Diesmann
+  void
+  insert_move( size_t i, TokenArray& a ) // 8.4.98 Diesmann
   {
     clone();   // make copy if others point to representation
     a.clone(); // also for a because we are going to empy it
@@ -425,7 +429,8 @@ public:
   const TokenArray& operator=( const std::vector< long >& );
   const TokenArray& operator=( const std::vector< double >& );
 
-  bool operator==( const TokenArray& a ) const
+  bool
+  operator==( const TokenArray& a ) const
   {
     return *data == *a.data;
   }

@@ -353,8 +353,8 @@ nest::Archiving_Node::clear_history()
 
 
 /* ----------------------------------------------------------------
-* Get the number of synaptic_elements
-* ---------------------------------------------------------------- */
+ * Get the number of synaptic_elements
+ * ---------------------------------------------------------------- */
 double
 nest::Archiving_Node::get_synaptic_elements( Name n ) const
 {

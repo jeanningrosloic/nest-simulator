@@ -40,8 +40,8 @@
 
 // Includes from nestkernel:
 #include "conn_parameter.h"
-#include "node_collection.h"
 #include "nest_time.h"
+#include "node_collection.h"
 #include "parameter.h"
 
 // Includes from sli:

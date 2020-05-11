@@ -24,8 +24,8 @@
 
 // Includes from nestkernel:
 #include "exceptions.h"
-#include "node_collection.h"
 #include "kernel_manager.h"
+#include "node_collection.h"
 #include "parameter.h"
 
 // Includes from sli:
@@ -121,12 +121,7 @@ AbstractLayer::create_layer( const DictionaryDatum& layer_dict )
   {
     std::vector< long > shape = getValue< std::vector< long > >( layer_dict, names::shape );
 
-    if ( not std::all_of( shape.begin(),
-           shape.end(),
-           []( long x )
-           {
-             return x > 0;
-           } ) )
+    if ( not std::all_of( shape.begin(), shape.end(), []( long x ) { return x > 0; } ) )
     {
       throw BadProperty( "All shape entries must be positive." );
     }

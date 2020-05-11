@@ -214,10 +214,11 @@ nest::ht_neuron::m_NMDA_( double V, double m_eq, double m_fast, double m_slow ) 
 inline double
 nest::ht_neuron::get_g_NMDA_() const
 {
-  return S_.y_[ State_::G_NMDA_TIMECOURSE ] * m_NMDA_( S_.y_[ State_::V_M ],
-                                                m_eq_NMDA_( S_.y_[ State_::V_M ] ),
-                                                S_.y_[ State_::m_fast_NMDA ],
-                                                S_.y_[ State_::m_slow_NMDA ] );
+  return S_.y_[ State_::G_NMDA_TIMECOURSE ]
+    * m_NMDA_( S_.y_[ State_::V_M ],
+      m_eq_NMDA_( S_.y_[ State_::V_M ] ),
+      S_.y_[ State_::m_fast_NMDA ],
+      S_.y_[ State_::m_slow_NMDA ] );
 }
 
 /* ----------------------------------------------------------------
@@ -305,7 +306,8 @@ nest::ht_neuron::State_::State_( const State_& s )
   }
 }
 
-nest::ht_neuron::State_& nest::ht_neuron::State_::operator=( const State_& s )
+nest::ht_neuron::State_&
+nest::ht_neuron::State_::operator=( const State_& s )
 {
   if ( this == &s )
   {

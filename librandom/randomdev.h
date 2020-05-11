@@ -148,7 +148,7 @@ public:
   }
 
   //! ensure proper clean-up
-  virtual ~RandomDev(){};
+  virtual ~RandomDev() {};
 
   /**
    * Operator delivering doubles
@@ -212,7 +212,8 @@ protected:
   RngPtr rng_; //!< store underlying RNG
 };
 
-inline double RandomDev::operator()( void )
+inline double
+RandomDev::operator()( void )
 {
   return ( *this )( rng_ );
 }

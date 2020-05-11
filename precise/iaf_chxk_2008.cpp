@@ -158,7 +158,8 @@ nest::iaf_chxk_2008::State_::State_( const State_& s )
   }
 }
 
-nest::iaf_chxk_2008::State_& nest::iaf_chxk_2008::State_::operator=( const State_& s )
+nest::iaf_chxk_2008::State_&
+nest::iaf_chxk_2008::State_::operator=( const State_& s )
 {
   if ( this == &s ) // avoid assignment to self
   {

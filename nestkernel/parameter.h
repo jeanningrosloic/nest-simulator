@@ -24,8 +24,8 @@
 #define PARAMETER_H_
 
 // C++ includes:
-#include <limits>
 #include <cmath>
+#include <limits>
 
 // Includes from librandom:
 #include "normal_randomdev.h"
@@ -185,7 +185,7 @@ public:
   bool is_spatial() const;
 
 protected:
-  bool parameter_is_spatial_{ false };
+  bool parameter_is_spatial_ { false };
 
   Node* node_id_to_node_ptr_( const index, const thread ) const;
 };
@@ -613,7 +613,7 @@ public:
   }
 
 protected:
-  Parameter* parameter1_, *parameter2_;
+  Parameter *parameter1_, *parameter2_;
 };
 
 /**
@@ -684,7 +684,7 @@ public:
   }
 
 protected:
-  Parameter* parameter1_, *parameter2_;
+  Parameter *parameter1_, *parameter2_;
 };
 
 /**
@@ -755,7 +755,7 @@ public:
   }
 
 protected:
-  Parameter* parameter1_, *parameter2_;
+  Parameter *parameter1_, *parameter2_;
 };
 
 /**
@@ -826,7 +826,7 @@ public:
   }
 
 protected:
-  Parameter* parameter1_, *parameter2_;
+  Parameter *parameter1_, *parameter2_;
 };
 
 /**
@@ -982,7 +982,7 @@ public:
   }
 
 protected:
-  Parameter* parameter1_, *parameter2_;
+  Parameter *parameter1_, *parameter2_;
 
 private:
   bool
@@ -1100,7 +1100,7 @@ public:
   }
 
 protected:
-  Parameter* condition_, *if_true_, *if_false_;
+  Parameter *condition_, *if_true_, *if_false_;
 };
 
 

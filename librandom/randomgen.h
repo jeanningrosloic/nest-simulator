@@ -241,10 +241,10 @@ public:
    *       RandomGen::DefaultSeed if you want to
    *       create a generator with a default seed value.
    */
-  RandomGen(){};
+  RandomGen() {};
 
   // ensures proper clean up
-  virtual ~RandomGen(){};
+  virtual ~RandomGen() {};
 
   /**
      The following functions implement the user interface of the
@@ -328,7 +328,8 @@ RandomGen::drand( void )
   return drand_();
 }
 
-inline double RandomGen::operator()( void )
+inline double
+RandomGen::operator()( void )
 {
   return drand();
 }

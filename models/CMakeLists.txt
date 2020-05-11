@@ -47,7 +47,7 @@ set( models_sources
     gif_cond_exp_multisynapse.h gif_cond_exp_multisynapse.cpp
     gif_pop_psc_exp.h gif_pop_psc_exp.cpp
     ginzburg_neuron.h ginzburg_neuron.cpp
-    glif_cond.h glif_cond.cpp     
+    glif_cond.h glif_cond.cpp
     glif_psc.h glif_psc.cpp
     hh_cond_exp_traub.h hh_cond_exp_traub.cpp
     hh_cond_beta_gap_traub.h hh_cond_beta_gap_traub.cpp
@@ -119,6 +119,7 @@ set( models_sources
     step_current_generator.h step_current_generator.cpp
     step_rate_generator.h step_rate_generator.cpp
     tanh_rate.h tanh_rate.cpp
+    tetzlaff_connection.h
     threshold_lin_rate.h threshold_lin_rate.cpp
     tsodyks2_connection.h
     tsodyks_connection.h

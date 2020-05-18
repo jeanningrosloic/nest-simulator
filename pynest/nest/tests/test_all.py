@@ -46,6 +46,7 @@ from . import test_getconnections
 from . import test_glif_cond
 from . import test_glif_psc
 from . import test_helper_functions
+from . import test_jonke_synapse
 from . import test_json
 from . import test_labeled_synapses
 from . import test_mc_neuron
@@ -102,6 +103,7 @@ def suite():
     suite.addTest(test_glif_cond.suite())
     suite.addTest(test_glif_psc.suite())
     suite.addTest(test_helper_functions.suite())
+    suite.addTest(test_jonke_synapse.suite())
     suite.addTest(test_json.suite())
     suite.addTest(test_labeled_synapses.suite())
     suite.addTest(test_mc_neuron.suite())

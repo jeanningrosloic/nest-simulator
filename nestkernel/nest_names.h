@@ -258,7 +258,7 @@ extern const Name is_refractory;
 
 extern const Name kappa;
 extern const Name keep_source_table;
-extern const Name kminus_tgt;
+extern const Name Kminus_target;
 extern const Name Kplus;
 extern const Name Kplus_triplet;
 

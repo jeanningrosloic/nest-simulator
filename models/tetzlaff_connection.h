@@ -61,8 +61,8 @@ namespace nest
     )
     where:
       - \tau_{conv} = \tau_+ * \tau_- / ( \tau_+ + \tau_- )
-      - the index 1 describes states at the time of the previous spike
-      - the index 2 describes states at the current spike time
+      - index 1 describes states at the time of the previous/last spike
+      - index 2 describes states at the current spike time
       - kplus/kminus are pre-/postsynaptic traces.
   Parameters:
     lambda          double - Step size / Learning rate
@@ -73,7 +73,7 @@ namespace nest
                              should be the same as set in the postsyn. neuron
     kappa           double - Homeostatic learning rate (regulates postsynaptic
                              scaling step size)
-    kminus_tgt      double - Homeostatic scaling level (determines the "desired"
+    Kminus_target   double - Homeostatic scaling level (determines the "desired"
                              postsyn. activity/firing rate)
   Transmits: SpikeEvent
   References:
@@ -119,8 +119,8 @@ public:
   // ConnectionBase. This avoids explicit name prefixes in all places these
   // functions are used. Since ConnectionBase depends on the template parameter,
   // they are not automatically found in the base class.
-  using ConnectionBase::get_delay;
   using ConnectionBase::get_delay_steps;
+  using ConnectionBase::get_delay;
   using ConnectionBase::get_rport;
   using ConnectionBase::get_target;
 
@@ -173,22 +173,34 @@ public:
 
 private:
   double
-  update_( double w, double kplus1, double kminus1, double kplus2, double kminus2, double minus_dt, double tau_conv_ )
+  update_(
+    double w
+    , double kplus1
+    , double kminus1
+    , double kplus2
+    , double kminus2
+    , double minus_dt
+    , double tau_conv_
+  )
   {
-    if ( lambda_ == 0.0 )
+    if(lambda_ == 0.0)
       return w;
 
-    double dW = lambda_
-      * ( ( kplus1 * kminus1 - kplus2 * kminus2 ) * tau_conv_
-        + kappa_ * std::pow( w, 2 ) * ( kminus_tgt_ * ( -minus_dt ) - ( kminus1 - kminus2 ) * tau_minus_ ) );
+    double dW = lambda_ * (
+      ( kplus1*kminus1 - kplus2*kminus2 ) * tau_conv_
+      + kappa_ * std::pow(w, 2) * (
+        Kminus_target_ * ( - minus_dt ) - ( kminus1 - kminus2 ) * tau_minus_
+      )
+    );
 
     double new_w = w + dW;
 
-    if ( new_w < 0.0 )
+    if( new_w < 0.0 )
       return 0.0;
-    if ( new_w > Wmax_ )
+    if (new_w > Wmax_ )
       return Wmax_;
     return new_w;
+
   }
 
   // data members of each connection
@@ -199,7 +211,7 @@ private:
   double Wmax_;
   double Kplus_;
   double kappa_;
-  double kminus_tgt_;
+  double Kminus_target_;
 
   double t_lastspike_;
 };
@@ -247,29 +259,37 @@ TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonS
     // start->t_ > t_lastspike - dendritic_delay, i.e. minus_dt < 0
     assert( minus_dt < -1.0 * kernel().connection_manager.get_stdp_eps() );
     // assert( minus_dt <= 0.0 );
-    weight_ = update_( weight_,
-      Kplus_,
-      Kminus,
-      Kplus_ * std::exp( minus_dt / tau_plus_ ),
-      Kminus * std::exp( minus_dt / tau_minus_ ),
-      minus_dt,
-      tau_conv_ );
+    weight_ = update_(
+      weight_
+      , Kplus_
+      , Kminus
+      , Kplus_ * std::exp( minus_dt / tau_plus_ )
+      , Kminus * std::exp( minus_dt / tau_minus_ )
+      , minus_dt
+      , tau_conv_
+    );
 
     Kplus_ = Kplus_ * std::exp( minus_dt / tau_plus_ );
     Kminus = Kminus * std::exp( minus_dt / tau_minus_ ) + 1.0;
+
+    std::cout << "N t_spk:" << start->t_ + dendritic_delay << std::endl;
+    std::cout << "N Kminus: " << Kminus << std::endl;
+
     t_lastspike_ = ( start->t_ + dendritic_delay );
     ++start;
   }
   // weight update due to pre-synaptic spike
   minus_dt = t_lastspike_ - t_spike;
 
-  weight_ = update_( weight_,
-    Kplus_,
-    Kminus,
-    Kplus_ * std::exp( minus_dt / tau_plus_ ),
-    Kminus * std::exp( minus_dt / tau_minus_ ),
-    minus_dt,
-    tau_conv_ );
+  weight_ = update_(
+    weight_
+    , Kplus_
+    , Kminus
+    , Kplus_ * std::exp( minus_dt / tau_plus_ )
+    , Kminus * std::exp( minus_dt / tau_minus_ )
+    , minus_dt
+    , tau_conv_
+  );
 
   e.set_receiver( *target );
   e.set_weight( weight_ );
@@ -279,7 +299,10 @@ TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonS
   e.set_rport( get_rport() );
   e();
 
-  Kplus_ = Kplus_ * std::exp( ( t_lastspike_ - t_spike ) / tau_plus_ ) + 1.0;
+  Kplus_ = Kplus_ * std::exp( minus_dt / tau_plus_ ) + 1.0;
+
+  std::cout << "N t_spk:" << t_spike << std::endl;
+  std::cout << "N Kplus: " << Kplus_ << std::endl;
 
   t_lastspike_ = t_spike;
 }
@@ -295,7 +318,7 @@ TetzlaffConnection< targetidentifierT >::TetzlaffConnection()
   , Wmax_( 100.0 )
   , Kplus_( 0.0 )
   , kappa_( 0.01 )
-  , kminus_tgt_( 0.0 )
+  , Kminus_target_( 0.0 )
   , t_lastspike_( 0.0 )
 {
 }
@@ -310,7 +333,7 @@ TetzlaffConnection< targetidentifierT >::TetzlaffConnection( const TetzlaffConne
   , Wmax_( rhs.Wmax_ )
   , Kplus_( rhs.Kplus_ )
   , kappa_( rhs.kappa_ )
-  , kminus_tgt_( rhs.kminus_tgt_ )
+  , Kminus_target_( rhs.Kminus_target_ )
   , t_lastspike_( rhs.t_lastspike_ )
 {
 }
@@ -326,7 +349,7 @@ TetzlaffConnection< targetidentifierT >::get_status( DictionaryDatum& d ) const
   def< double >( d, names::lambda, lambda_ );
   def< double >( d, names::Wmax, Wmax_ );
   def< double >( d, names::kappa, kappa_ );
-  def< double >( d, names::kminus_tgt, kminus_tgt_ );
+  def< double >( d, names::Kminus_target, Kminus_target_ );
   def< long >( d, names::size_of, sizeof( *this ) );
 }
 
@@ -341,7 +364,7 @@ TetzlaffConnection< targetidentifierT >::set_status( const DictionaryDatum& d, C
   updateValue< double >( d, names::lambda, lambda_ );
   updateValue< double >( d, names::Wmax, Wmax_ );
   updateValue< double >( d, names::kappa, kappa_ );
-  updateValue< double >( d, names::kminus_tgt, kminus_tgt_ );
+  updateValue< double >( d, names::Kminus_target, Kminus_target_ );
 
   // check if weight_ and Wmax_ has the same sign
   if ( not( ( ( weight_ >= 0 ) - ( weight_ < 0 ) ) == ( ( Wmax_ >= 0 ) - ( Wmax_ < 0 ) ) ) )

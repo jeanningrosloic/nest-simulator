@@ -237,7 +237,7 @@ const Name is_refractory( "is_refractory" );
 
 const Name kappa( "kappa" );
 const Name keep_source_table( "keep_source_table" );
-const Name kminus_tgt( "kminus_tgt" );
+const Name Kminus_target( "Kminus_target" );
 const Name Kplus( "Kplus" );
 const Name Kplus_triplet( "Kplus_triplet" );
 

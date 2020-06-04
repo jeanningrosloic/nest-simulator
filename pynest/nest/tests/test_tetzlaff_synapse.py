@@ -39,7 +39,7 @@ class TetzlaffSynapseTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.resolution = 0.1  # [ms]
+        self.resolution = 0.01  # [ms]
         self.presynaptic_firing_rate = 20.0  # [Hz]
         self.postsynaptic_firing_rate = 20.0  # [Hz]
         self.simulation_duration = 5e+2  # [ms]
@@ -195,23 +195,6 @@ class TetzlaffSynapseTest(unittest.TestCase):
         weights = {"times": [], "weights": []}
         for time_in_simulation_steps in range(n_steps):
 
-            if time_in_simulation_steps in pre_spikes_forced_to_grid:
-                # A presynaptic spike occured now.
-
-                # Adjusting the current time to make it exact.
-                t = _pre_spikes[pre_spikes_forced_to_grid.index(time_in_simulation_steps)]
-
-                # Memorizing the current pre-spike and the presynaptic trace
-                # to account it further with the next post-spike.
-                syn_trace_pre = (
-                    syn_trace_pre * np.exp(
-                        (t_previous_pre - t) / self.synapse_parameters["tau_plus"]
-                    ) + 1.0
-                )
-                t_previous_pre = t
-                print(f"T t_spk: {t}")
-                print(f"T Kplus: {syn_trace_pre}")
-
             if time_in_simulation_steps in post_spikes_forced_to_grid:
                 # A postsynaptic spike occured now.
 
@@ -230,8 +213,23 @@ class TetzlaffSynapseTest(unittest.TestCase):
                     ) + 1.0
                 )
                 t_previous_post = t
-                print(f"T t_spk: {t}")
-                print(f"T Kminus: {syn_trace_post}")
+                print(f"T t_post: {t}, Kminus: {syn_trace_post}")
+
+            if time_in_simulation_steps in pre_spikes_forced_to_grid:
+                # A presynaptic spike occured now.
+
+                # Adjusting the current time to make it exact.
+                t = _pre_spikes[pre_spikes_forced_to_grid.index(time_in_simulation_steps)]
+
+                # Memorizing the current pre-spike and the presynaptic trace
+                # to account it further with the next post-spike.
+                syn_trace_pre = (
+                    syn_trace_pre * np.exp(
+                        (t_previous_pre - t) / self.synapse_parameters["tau_plus"]
+                    ) + 1.0
+                )
+                t_previous_pre = t
+                print(f"T t_pre: {t}, Kminus: {syn_trace_post * np.exp((t_previous_post - t) / self.synapse_parameters['tau_minus'])}")
 
             t = time_in_simulation_steps * self.resolution
             Kplus = syn_trace_pre * np.exp( (t_previous_pre - t) / self.synapse_parameters["tau_plus"])

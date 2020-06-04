@@ -251,7 +251,9 @@ TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonS
   target->get_history( t_lastspike_ - dendritic_delay, t_spike - dendritic_delay, &start, &finish );
   // weight update due to post-synaptic spikes since last pre-synaptic spike
   double minus_dt;
-  double Kminus = target->get_K_value( t_lastspike_ - dendritic_delay );
+  const double _K_value = target->get_K_value( t_lastspike_ - dendritic_delay );
+  double Kminus(_K_value);
+  std::cout << "Kminus: " << Kminus << ", t_lastspike: " << t_lastspike_ << std::endl;
   while ( start != finish )
   {
     minus_dt = t_lastspike_ - ( start->t_ + dendritic_delay );
@@ -272,10 +274,8 @@ TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonS
     Kplus_ = Kplus_ * std::exp( minus_dt / tau_plus_ );
     Kminus = Kminus * std::exp( minus_dt / tau_minus_ ) + 1.0;
 
-    std::cout << "N t_spk:" << start->t_ + dendritic_delay << std::endl;
-    std::cout << "N Kminus: " << Kminus << std::endl;
-
     t_lastspike_ = ( start->t_ + dendritic_delay );
+    std::cout << "N t_post:" << t_lastspike_ <<  ", Kminus: " << Kminus << std::endl;
     ++start;
   }
   // weight update due to pre-synaptic spike
@@ -300,9 +300,9 @@ TetzlaffConnection< targetidentifierT >::send( Event& e, thread t, const CommonS
   e();
 
   Kplus_ = Kplus_ * std::exp( minus_dt / tau_plus_ ) + 1.0;
+  Kminus = Kminus * std::exp( minus_dt / tau_minus_ );
 
-  std::cout << "N t_spk:" << t_spike << std::endl;
-  std::cout << "N Kplus: " << Kplus_ << std::endl;
+  std::cout << "N t_pre:" << t_spike << ", Kminus: " << Kminus << std::endl;
 
   t_lastspike_ = t_spike;
 }

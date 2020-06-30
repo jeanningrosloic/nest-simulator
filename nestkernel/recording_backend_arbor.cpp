@@ -20,6 +20,11 @@
  *
  */
 
+// Generated includes:
+#include "config.h"
+
+#ifdef HAVE_RECORDINGBACKEND_ARBOR
+
 // C includes:
 #include <memory>
 #include <mpi.h>
@@ -340,3 +345,4 @@ nest::RecordingBackendArbor::set_status( const DictionaryDatum& d )
   // if we get here, temporaries contain consistent set of properties
   P_ = ptmp;
 }
+#endif // HAVE_RECORDINGBACKEND_ARBOR

@@ -39,7 +39,7 @@ class JonkeSynapseTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.resolution = 0.01  # [ms]
+        self.resolution = 0.1  # [ms]
         self.presynaptic_firing_rate = 20.0  # [Hz]
         self.postsynaptic_firing_rate = 20.0  # [Hz]
         self.simulation_duration = 1e+4  # [ms]
@@ -48,6 +48,10 @@ class JonkeSynapseTest(unittest.TestCase):
             "synapse_model": "jonke_synapse",
             "receptor_type": 1,
             "delay": self.resolution,
+            # initial weight
+            "weight": 2.0
+        }
+        self.synapse_constants = {
             # STDP constants
             "lambda": 0.1 * np.e,
             "alpha": 1.0 / np.e,
@@ -56,8 +60,6 @@ class JonkeSynapseTest(unittest.TestCase):
             "mu_minus": 0.0,
             "tau_plus": 36.8,
             "Wmax": 100.0,
-            # initial weight
-            "weight": 2.0
         }
         self.neuron_parameters = {
             "tau_minus": 33.7
@@ -144,6 +146,7 @@ class JonkeSynapseTest(unittest.TestCase):
                      syn_spec={"synapse_model": "static_synapse"})
 
         # The synapse of interest itself
+        nest.SetDefaults(self.synapse_parameters["synapse_model"], self.synapse_constants)
         nest.Connect(presynaptic_neuron, postsynaptic_neuron,
                      syn_spec=self.synapse_parameters)
         plastic_synapse_of_interest = nest.GetConnections(synapse_model=self.synapse_parameters["synapse_model"])
@@ -188,7 +191,7 @@ class JonkeSynapseTest(unittest.TestCase):
                 # to account it further with the next post-spike.
                 syn_trace_pre = (
                     syn_trace_pre * np.exp(
-                        (t_previous_pre - t) / self.synapse_parameters["tau_plus"]
+                        (t_previous_pre - t) / self.synapse_constants["tau_plus"]
                     ) + 1.0
                 )
                 t_previous_pre = t
@@ -223,12 +226,12 @@ class JonkeSynapseTest(unittest.TestCase):
             return w
         #print(f"F: dt={_delta_t}, Kplus={Kplus}")
         w += (
-            self.synapse_parameters["lambda"] / np.e *
+            self.synapse_constants["lambda"] / np.e *
             np.exp(1 - w) *
-            Kplus * np.exp(_delta_t / self.synapse_parameters["tau_plus"])
+            Kplus * np.exp(_delta_t / self.synapse_constants["tau_plus"])
         )
-        if w > self.synapse_parameters["Wmax"]:
-            w = self.synapse_parameters["Wmax"]
+        if w > self.synapse_constants["Wmax"]:
+            w = self.synapse_constants["Wmax"]
         return w
 
     def depress(self, _delta_t, w, Kminus):
@@ -236,7 +239,7 @@ class JonkeSynapseTest(unittest.TestCase):
             return w
         #print(f"D: dt={_delta_t}, Kminus={Kminus}")
         w -= (
-            self.synapse_parameters["lambda"] / np.e *
+            self.synapse_constants["lambda"] / np.e *
             Kminus * np.exp(_delta_t / self.neuron_parameters["tau_minus"])
         )
         if w < 0:

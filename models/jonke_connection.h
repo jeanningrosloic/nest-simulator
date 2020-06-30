@@ -84,6 +84,81 @@ namespace nest
   SeeAlso: synapsedict, stdp_synapse
 */
 
+
+/**
+ * Class containing the common properties for all synapses of type dopamine
+ * connection.
+ */
+class JonkeCommonProperties : public CommonSynapseProperties
+{
+public:
+  /**
+   * Default constructor.
+   * Sets all property values to defaults.
+   */
+  JonkeCommonProperties();
+
+  /**
+   * Get all properties and put them into a dictionary.
+   */
+  void get_status( DictionaryDatum& d ) const;
+
+  /**
+   * Set properties from the values given in dictionary.
+   */
+  void set_status( const DictionaryDatum& d, ConnectorModel& cm );
+
+  double alpha_;
+  double beta_;
+  double lambda_;
+  double mu_plus_;
+  double mu_minus_;
+  double tau_plus_;
+  double Wmax_;
+
+};
+
+JonkeCommonProperties::JonkeCommonProperties()
+  : CommonSynapseProperties()
+  , alpha_( 1.0 )
+  , beta_( 0.0 )
+  , lambda_( 0.01 )
+  , mu_plus_( 0.0 )
+  , mu_minus_( 0.0 )
+  , tau_plus_( 20.0 )
+  , Wmax_( 100.0 )
+{
+}
+
+void
+JonkeCommonProperties::get_status( DictionaryDatum& d ) const
+{
+  CommonSynapseProperties::get_status( d );
+
+  def< double >( d, names::alpha, alpha_ );
+  def< double >( d, names::beta, beta_ );
+  def< double >( d, names::lambda, lambda_ );
+  def< double >( d, names::mu_plus, mu_plus_ );
+  def< double >( d, names::mu_minus, mu_minus_ );
+  def< double >( d, names::tau_plus, tau_plus_ );
+  def< double >( d, names::Wmax, Wmax_ );
+}
+
+void
+JonkeCommonProperties::set_status( const DictionaryDatum& d, ConnectorModel& cm )
+{
+  CommonSynapseProperties::set_status( d, cm );
+
+  updateValue< double >( d, names::alpha, alpha_ );
+  updateValue< double >( d, names::beta, beta_ );
+  updateValue< double >( d, names::lambda, lambda_ );
+  updateValue< double >( d, names::tau_plus, tau_plus_ );
+  updateValue< double >( d, names::mu_plus, mu_plus_ );
+  updateValue< double >( d, names::mu_minus, mu_minus_ );
+  updateValue< double >( d, names::Wmax, Wmax_ );
+}
+
+
 // connections are templates of target identifier type (used for pointer /
 // target index addressing) derived from generic connection template
 template < typename targetidentifierT >
@@ -91,7 +166,7 @@ class JonkeConnection : public Connection< targetidentifierT >
 {
 
 public:
-  typedef CommonSynapseProperties CommonPropertiesType;
+  typedef JonkeCommonProperties CommonPropertiesType;
   typedef Connection< targetidentifierT > ConnectionBase;
 
   /**
@@ -127,11 +202,18 @@ public:
   void set_status( const DictionaryDatum& d, ConnectorModel& cm );
 
   /**
+   * Checks to see if illegal parameters are given in syn_spec.
+   *
+   * The illegal parameters are:  "alpha", "beta", "lambda", "mu_plus", "mu_minus", "tau_plus", "Wmax"
+   */
+  void check_synapse_params( const DictionaryDatum& d ) const;
+
+  /**
    * Send an event to the receiver of this connection.
    * \param e The event to send
    * \param cp common properties of all synapses (empty).
    */
-  void send( Event& e, thread t, const CommonSynapseProperties& cp );
+  void send( Event& e, thread t, const JonkeCommonProperties& cp );
 
 
   class ConnTestDummyNode : public ConnTestDummyNodeBase
@@ -165,30 +247,30 @@ public:
 
 private:
   double
-  facilitate_( double w, double kplus )
+  facilitate_( double w, double kplus, const JonkeCommonProperties& cp )
   {
-    if ( lambda_ == 0.0 )
+    if ( cp.lambda_ == 0.0 )
       return w;
 
-    double K_w = std::exp( mu_plus_ * w );
+    double K_w = std::exp( cp.mu_plus_ * w );
     double F_t = kplus;
 
-    double dW = lambda_ * ( K_w * F_t - beta_ );
+    double dW = cp.lambda_ * ( K_w * F_t - cp.beta_ );
     double new_w = w + dW;
 
-    return new_w < Wmax_ ? new_w : Wmax_;
+    return new_w < cp.Wmax_ ? new_w : cp.Wmax_;
   }
 
   double
-  depress_( double w, double kminus )
+  depress_( double w, double kminus, const JonkeCommonProperties& cp )
   {
-    if ( lambda_ == 0.0 )
+    if ( cp.lambda_ == 0.0 )
       return w;
 
-    double K_w = std::exp( mu_minus_ * w );
+    double K_w = std::exp( cp.mu_minus_ * w );
     double F_t = kminus;
 
-    double dW = lambda_ * ( -alpha_ * K_w * F_t - beta_ );
+    double dW = cp.lambda_ * ( -cp.alpha_ * K_w * F_t - cp.beta_ );
     double new_w = w + dW;
 
     return new_w > 0.0 ? new_w : 0.0;
@@ -196,15 +278,7 @@ private:
 
   // data members of each connection
   double weight_;
-  double tau_plus_;
-  double lambda_;
-  double alpha_;
-  double mu_plus_;
-  double mu_minus_;
-  double Wmax_;
   double Kplus_;
-  double beta_;
-
   double t_lastspike_;
 };
 
@@ -217,7 +291,7 @@ private:
  */
 template < typename targetidentifierT >
 inline void
-JonkeConnection< targetidentifierT >::send( Event& e, thread t, const CommonSynapseProperties& )
+JonkeConnection< targetidentifierT >::send( Event& e, thread t, const JonkeCommonProperties& cp )
 {
   // synapse STDP depressing/facilitation dynamics
   const double t_spike = e.get_stamp().get_ms();
@@ -249,11 +323,11 @@ JonkeConnection< targetidentifierT >::send( Event& e, thread t, const CommonSyna
     // get_history() should make sure that
     // start->t_ > t_lastspike - dendritic_delay, i.e. minus_dt < 0
     assert( minus_dt < -1.0 * kernel().connection_manager.get_stdp_eps() );
-    weight_ = facilitate_( weight_, Kplus_ * std::exp( minus_dt / tau_plus_ ) );
+    weight_ = facilitate_( weight_, Kplus_ * std::exp( minus_dt / cp.tau_plus_ ), cp );
   }
 
   const double _K_value = target->get_K_value( t_spike - dendritic_delay );
-  weight_ = depress_( weight_, _K_value );
+  weight_ = depress_( weight_, _K_value, cp );
 
   e.set_receiver( *target );
   e.set_weight( weight_ );
@@ -263,7 +337,7 @@ JonkeConnection< targetidentifierT >::send( Event& e, thread t, const CommonSyna
   e.set_rport( get_rport() );
   e();
 
-  Kplus_ = Kplus_ * std::exp( ( t_lastspike_ - t_spike ) / tau_plus_ ) + 1.0;
+  Kplus_ = Kplus_ * std::exp( ( t_lastspike_ - t_spike ) / cp.tau_plus_ ) + 1.0;
 
   t_lastspike_ = t_spike;
 }
@@ -273,14 +347,7 @@ template < typename targetidentifierT >
 JonkeConnection< targetidentifierT >::JonkeConnection()
   : ConnectionBase()
   , weight_( 1.0 )
-  , tau_plus_( 20.0 )
-  , lambda_( 0.01 )
-  , alpha_( 1.0 )
-  , mu_plus_( 0.0 )
-  , mu_minus_( 0.0 )
-  , Wmax_( 100.0 )
   , Kplus_( 0.0 )
-  , beta_( 0.0 )
   , t_lastspike_( 0.0 )
 {
 }
@@ -289,14 +356,7 @@ template < typename targetidentifierT >
 JonkeConnection< targetidentifierT >::JonkeConnection( const JonkeConnection< targetidentifierT >& rhs )
   : ConnectionBase( rhs )
   , weight_( rhs.weight_ )
-  , tau_plus_( rhs.tau_plus_ )
-  , lambda_( rhs.lambda_ )
-  , alpha_( rhs.alpha_ )
-  , mu_plus_( rhs.mu_plus_ )
-  , mu_minus_( rhs.mu_minus_ )
-  , Wmax_( rhs.Wmax_ )
   , Kplus_( rhs.Kplus_ )
-  , beta_( rhs.beta_ )
   , t_lastspike_( rhs.t_lastspike_ )
 {
 }
@@ -307,13 +367,6 @@ JonkeConnection< targetidentifierT >::get_status( DictionaryDatum& d ) const
 {
   ConnectionBase::get_status( d );
   def< double >( d, names::weight, weight_ );
-  def< double >( d, names::tau_plus, tau_plus_ );
-  def< double >( d, names::lambda, lambda_ );
-  def< double >( d, names::alpha, alpha_ );
-  def< double >( d, names::mu_plus, mu_plus_ );
-  def< double >( d, names::mu_minus, mu_minus_ );
-  def< double >( d, names::Wmax, Wmax_ );
-  def< double >( d, names::beta, beta_ );
   def< long >( d, names::size_of, sizeof( *this ) );
 }
 
@@ -323,18 +376,23 @@ JonkeConnection< targetidentifierT >::set_status( const DictionaryDatum& d, Conn
 {
   ConnectionBase::set_status( d, cm );
   updateValue< double >( d, names::weight, weight_ );
-  updateValue< double >( d, names::tau_plus, tau_plus_ );
-  updateValue< double >( d, names::lambda, lambda_ );
-  updateValue< double >( d, names::alpha, alpha_ );
-  updateValue< double >( d, names::mu_plus, mu_plus_ );
-  updateValue< double >( d, names::mu_minus, mu_minus_ );
-  updateValue< double >( d, names::Wmax, Wmax_ );
-  updateValue< double >( d, names::beta, beta_ );
+}
 
-  // check if weight_ and Wmax_ has the same sign
-  if ( not( ( ( weight_ >= 0 ) - ( weight_ < 0 ) ) == ( ( Wmax_ >= 0 ) - ( Wmax_ < 0 ) ) ) )
+template < typename targetidentifierT >
+void
+JonkeConnection< targetidentifierT >::check_synapse_params( const DictionaryDatum& syn_spec ) const
+{
+  std::string param_arr[] = { "alpha", "beta", "lambda", "mu_plus", "mu_minus", "tau_plus", "Wmax" };
+
+  const size_t n_param = sizeof( param_arr ) / sizeof( std::string );
+  for ( size_t n = 0; n < n_param; ++n )
   {
-    throw BadProperty( "Weight and Wmax must have same sign." );
+    if ( syn_spec->known( param_arr[ n ] ) )
+    {
+      throw NotImplemented(
+        "Connect doesn't support the setting of parameter param_arr[ n ]"
+        "in jonke_synapse. Use SetDefaults() or CopyModel()." );
+    }
   }
 }
 
